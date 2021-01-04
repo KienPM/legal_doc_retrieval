@@ -1,4 +1,12 @@
 """ Create by Ken at 2020 Mar 06 """
+import string
+from CocCocTokenizer import PyTokenizer
+from html import unescape
+
+src_dict = string.punctuation.replace('_', '\n')
+dst_dict = ' ' * len(src_dict)
+translator = str.maketrans(src_dict, dst_dict)
+tokenizer = PyTokenizer(load_nontone_data=True)
 
 
 def compound_unicode(unicode_str):
@@ -132,6 +140,23 @@ def compound_unicode(unicode_str):
 def fix_font(s):
     s = s.replace('ð', 'đ')
     s = s.replace('Ð', 'Đ')
+    return s
+
+
+def pre_process_text(s):
+    """
+    - Tokenize words using coccoc-tokenizer
+    - Eliminate punctuation
+    - Transform to lower case
+    :type s: str
+    :rtype: str
+    """
+    s = compound_unicode(s)
+    s = ' '.join(tokenizer.word_tokenize(s, tokenize_option=2))
+    s = unescape(s)
+    s = s.translate(translator)
+    s = s.lower()
+    s = fix_font(s)
     return s
 
 
